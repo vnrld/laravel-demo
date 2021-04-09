@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
@@ -29,8 +30,8 @@ class UsersController extends Controller
         $this->logger = $logger;
     }
 
-    public function createUser(CreateUserRequest $request): JsonResponse {
-
+    public function createUser(CreateUserRequest $request): JsonResponse
+    {
         $data = $request->validated();
 
         $response = new Response();
@@ -39,7 +40,6 @@ class UsersController extends Controller
             $user = $this->userRepository->create(new User($data));
             $response->setMessage(MessageCodes::USER_CREATED, [$user->id]);
         } catch (QueryException $queryException) {
-
             $this->logger->error('Cannot create a new user: ' . $queryException->getMessage(), [__METHOD__]);
             $response->setCode(Response::HTTP_CONFLICT);
             $response->setMessage(MessageCodes::USER_ALREADY_EXISTS, [$request->getEmail()]);
@@ -54,8 +54,8 @@ class UsersController extends Controller
         return $response->json();
     }
 
-    public function readUser(ReadUserRequest $request): JsonResponse {
-
+    public function readUser(ReadUserRequest $request): JsonResponse
+    {
         $userId = $request->getId();
 
         $user = $this->userRepository->read($userId);
@@ -78,15 +78,27 @@ class UsersController extends Controller
     {
         $data = $request->validated();
 
-        $user = $this->userRepository->update(new User($data));
+        $response = new Response();
 
-        print_r($user->toArray());
+        $user = null;
 
-        die();
+        try {
+            $user = $this->userRepository->update(new User($data));
+        } catch (QueryException $queryException) {
+            $this->logger->error(
+                'Cannot update the user: ' . $request->getId() . ' : ' . $queryException->getMessage(),
+                [__METHOD__]
+            );
+            $response->setSuccess(false);
+            $response->setCode(Response::HTTP_CONFLICT);
+            $response->setMessage(MessageCodes::USER_ALREADY_EXISTS, [$request->getEmail()]);
+        }
+
+        $response->setContent($user);
+        return $response->json();
     }
 
     public function deleteUser(DeleteUserRequest $request): JsonResponse
     {
-
     }
 }
