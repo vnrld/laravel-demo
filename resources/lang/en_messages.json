@@ -1,0 +1,9 @@
+{
+  "66": "",
+  "99": "Unknown error! Are you sure, you've been using a correct error code?  Please refer to the error codes guide",
+  "200": "Success",
+  "10201": "User \":id\" successfully created.",
+  "10202": "User \":email\" already exists!",
+  "10404": "User with id \":id\" not found.",
+  "10409": "User with the same e-mail already exists!"
+}
