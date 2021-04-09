@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 
 use App\Contracts\UserRepositoryContract;
+use App\Exceptions\User\NotFoundException;
 use App\Http\Messaging\MessageCodes;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
@@ -92,6 +93,10 @@ class UsersController extends Controller
             $response->setSuccess(false);
             $response->setCode(Response::HTTP_CONFLICT);
             $response->setMessage(MessageCodes::USER_ALREADY_EXISTS, [$request->getEmail()]);
+        } catch (NotFoundException $notFoundException) {
+            $response->setSuccess(false);
+            $response->setCode(Response::HTTP_NOT_FOUND);
+            $response->setMessage(MessageCodes::USER_NOT_FOUND, [$request->getId()]);
         }
 
         $response->setContent($user);
