@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Contracts\CacheCrudRepositoryContract;
 use App\Contracts\UserHistoryRepositoryContract;
 use App\Models\UserHistory;
 use DateTime;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -39,24 +41,29 @@ class UserObserver
      */
     private ConnectionInterface $db;
 
+    /**
+     * @var Store
+     */
+    private CacheCrudRepositoryContract $cacheRepository;
 
     /**
      * UserObserver constructor.
      * @param LoggerInterface $logger
      * @param UserHistoryRepositoryContract $userHistoryRepository
-     * @param DateTime $dateTime
      * @param ConnectionInterface $db
+     * @param CacheCrudRepositoryContract $cacheRepository
      */
     public function __construct(
         LoggerInterface $logger,
         UserHistoryRepositoryContract $userHistoryRepository,
-        DateTime $dateTime,
-        ConnectionInterface $db
+        ConnectionInterface $db,
+        CacheCrudRepositoryContract $cacheRepository
     ) {
         $this->logger = $logger;
         $this->userHistoryRepository = $userHistoryRepository;
-        $this->dateTime = $dateTime;
+        $this->dateTime = new DateTime();
         $this->db = $db;
+        $this->cacheRepository = $cacheRepository;
     }
 
     /**
@@ -87,7 +94,8 @@ class UserObserver
             $message = 'Created new user with id: ' . $uuid;
 
             $this->logger->info($message, [__METHOD__, $uuid]);
-            $this->addHistoryEntry(Uuid::uuid4()->toString(), $uuid, $message);
+            $this->addHistoryEntry(Uuid::uuid4()->toString(), $uuid, 'CREATED: ' . $model->toJson());
+            $this->cacheRepository->create($this->getCacheKey($uuid), $model, 3600);
             $this->db->commit();
         } catch (PDOException | QueryException $exception) {
             $this->db->rollBack();
@@ -108,7 +116,8 @@ class UserObserver
             $message = 'Updated user with id: ' . $uuid;
 
             $this->logger->info($message, [__METHOD__, $uuid]);
-            $this->addHistoryEntry(Uuid::uuid4()->toString(), $uuid, $message);
+            $this->addHistoryEntry(Uuid::uuid4()->toString(), $uuid, 'UPDATED: ' . $model->toJson());
+            $this->cacheRepository->update($this->getCacheKey($uuid), $model, 3600);
             $this->db->commit();
         } catch (PDOException | QueryException $exception) {
             $this->db->rollBack();
@@ -129,7 +138,8 @@ class UserObserver
             $message = 'Deleted user with id: ' . $uuid;
 
             $this->logger->info($message, [__METHOD__, $uuid]);
-            $this->addHistoryEntry(Uuid::uuid4()->toString(), $uuid, $message);
+            $this->addHistoryEntry(Uuid::uuid4()->toString(), $uuid, 'DELETED: ' . $model->toJson());
+            $this->cacheRepository->delete($this->getCacheKey($uuid));
             $this->db->commit();
         } catch (PDOException | QueryException $exception) {
             $this->db->rollBack();
@@ -147,4 +157,8 @@ class UserObserver
         );
     }
 
+    private function getCacheKey(string $id): string
+    {
+        return 'user_' . $id;
+    }
 }

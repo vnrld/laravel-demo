@@ -94,6 +94,10 @@ class UsersController extends Controller
             $response->setCode(Response::HTTP_CONFLICT);
             $response->setMessage(MessageCodes::USER_ALREADY_EXISTS, [$request->getEmail()]);
         } catch (NotFoundException $notFoundException) {
+            $this->logger->warning(
+                'Cannot update the user: ' . $request->getId() . ' : ' . $notFoundException->getMessage(),
+                [__METHOD__]
+            );
             $response->setSuccess(false);
             $response->setCode(Response::HTTP_NOT_FOUND);
             $response->setMessage(MessageCodes::USER_NOT_FOUND, [$request->getId()]);
@@ -105,5 +109,20 @@ class UsersController extends Controller
 
     public function deleteUser(DeleteUserRequest $request): JsonResponse
     {
+        $userId = $request->getId();
+
+        $response = new Response();
+
+        try {
+            $isDeleted = $this->userRepository->delete($userId);
+            $response->setMessage(MessageCodes::USER_DELETED, [$userId]);
+        } catch (NotFoundException $notFoundException) {
+            $isDeleted = false;
+            $response->setMessage(MessageCodes::USER_NOT_FOUND, [$userId]);
+        }
+
+        $response->setSuccess($isDeleted);
+        $response->setContent(['deleted' => $isDeleted]);
+
     }
 }

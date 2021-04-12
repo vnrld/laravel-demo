@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Contracts\CacheCrudRepositoryContract;
 use App\Contracts\UserRepositoryContract;
 use App\Exceptions\User\NotFoundException;
 use App\Models\User;
@@ -10,6 +11,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserRepository implements UserRepositoryContract
 {
+    private CacheCrudRepositoryContract $cacheRepository;
+
+    public function __construct(CacheCrudRepositoryContract $cacheRepository)
+    {
+        $this->cacheRepository = $cacheRepository;
+    }
 
     /**
      * @param Model $model
@@ -24,10 +31,23 @@ class UserRepository implements UserRepositoryContract
     /**
      * @param string $id
      * @return Model|null
+     * @throws NotFoundException
      */
     public function read(string $id): ?Model
     {
-        return User::find($id);
+        $cacheKey = 'user_' . $id;
+
+        $user = $this->cacheRepository->read($cacheKey);
+
+        if ($user === null) {
+            $user = User::find($id);
+            if ($user === null) {
+                throw new NotFoundException('User ' . $id . ' not found!');
+            }
+            $this->cacheRepository->create($cacheKey, $user, 3600);
+        }
+
+        return $user;
     }
 
     /**
@@ -37,23 +57,38 @@ class UserRepository implements UserRepositoryContract
      */
     public function update(Model $model): Model
     {
-        $user = User::find($model->id);
+        $userId = $model->id;
 
-        if ($user === null) {
-            throw new NotFoundException('User ' . $model->id . ' not found!');
+        $user = User::find($userId);
+
+        if ($user === null || (!$user instanceof $model)) {
+            throw new NotFoundException('User ' . $userId . ' not found!');
         }
 
-        $model->save();
-        return $model;
+        $modelAttributes = $model->toArray();
+
+        foreach ($modelAttributes as $attribute => $value) {
+            if ($user->isFillable($attribute)) {
+                $user->setAttribute($attribute, $value);
+            }
+        }
+
+        $user->save();
+        return $user;
     }
 
     /**
      * @param string $id
      * @return bool
+     * @throws NotFoundException
      */
     public function delete(string $id): bool
     {
-        return (bool)User::destroy($id);
+        if ($this->read($id)) {
+            return (bool)User::destroy($id);
+        }
+
+        return false;
     }
 
     /**
@@ -68,4 +103,5 @@ class UserRepository implements UserRepositoryContract
     {
         return User::where('email', '=', $email)->first();
     }
+
 }

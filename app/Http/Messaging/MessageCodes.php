@@ -17,4 +17,6 @@ final class MessageCodes extends \Px\Framework\Http\Responder\Messaging\MessageC
     public const USER_NOT_FOUND = 10404;
 
     public const USER_ALREADY_EXISTS = 10409;
+
+    public const USER_DELETED = 10410;
 }
