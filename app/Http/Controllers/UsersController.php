@@ -126,24 +126,7 @@ class UsersController extends Controller
         return $response->json();
     }
 
-    public function savePhoto(): JsonResponse
-    {
-        $storage = new Storage();
-        $storage->put('test.txt', 'Photo: ' . date('Y-m-d H:i:s'));
 
-        $response = new Response();
-        $response->setContent([$storage->get('test.txt')]);
-        return $response->json();
-    }
 
-    public function savePhotoInS3(): JsonResponse
-    {
-        $storage = new Storage('s3');
 
-        \Illuminate\Support\Facades\Storage::disk('s3')->put('test.txt', 'Photo: ' . date('Y-m-d H:i:s'));
-
-        $response = new Response();
-        $response->setContent([\Illuminate\Support\Facades\Storage::disk('s3')->get('test.txt')]);
-        return $response->json();
-    }
 }
