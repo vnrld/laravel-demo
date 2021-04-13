@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Cognito;
 
 use App\Exceptions\Validation\ApiValidationException;
 use App\Http\Requests\Route\RouteRequest;
 
-class ReadUserRequest extends RouteRequest
+class ListUserPoolsRequest extends RouteRequest
 {
-    protected array $routeParams = ['id'];
+    protected array $routeParams = ['max_results'];
 
     protected string $exceptionClass = ApiValidationException::class;
 
@@ -20,7 +20,7 @@ class ReadUserRequest extends RouteRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|uuid'
+            'max_results' => 'required|int'
         ];
     }
 
@@ -42,16 +42,16 @@ class ReadUserRequest extends RouteRequest
     public function messages(): array
     {
         return [
-            'id.required' => 'The id has to be an UUID'
+            'max_results.required' => 'The max results is required.'
         ];
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getId(): string
+    public function getMaxResults(): int
     {
-        return $this->getParam('id', '');
+        return (int)$this->getParam('max_results', 0);
     }
 
 }

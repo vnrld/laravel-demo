@@ -18,8 +18,6 @@ class CreateUserHistoryTable extends Migration
             $table->uuid('user_id');
             $table->mediumText('entry');
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

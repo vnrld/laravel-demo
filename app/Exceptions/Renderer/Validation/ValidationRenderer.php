@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace App\Exceptions\Renderer\Validation;
 
+use App\Contracts\ExceptionRendererContract;
 use App\Exceptions\Validation\AppValidationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Px\Framework\Http\Responder\Response;
 
-class ValidationRenderer
+class ValidationRenderer implements ExceptionRendererContract
 {
     private Request $request;
 
     private AppValidationException $validationException;
 
-    public function __construct(Request $request, AppValidationException $validationException)
+    public function __construct(AppValidationException $validationException)
     {
-        $this->request = $request;
         $this->validationException = $validationException;
     }
 
     /**
      * @return JsonResponse|Response
+     * @throws \JsonException
      */
     public function render()
     {

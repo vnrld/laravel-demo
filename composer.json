@@ -15,6 +15,7 @@
   ],
   "require": {
     "php": "^7.4|^8.0",
+    "ext-pdo": "*",
     "doctrine/dbal": "^3.0",
     "fideloper/proxy": "^4.4",
     "fruitcake/laravel-cors": "^2.0",
@@ -23,9 +24,9 @@
     "laravel/passport": "^10.1",
     "laravel/scout": "^8.6",
     "laravel/tinker": "^2.5",
+    "league/flysystem-aws-s3-v3": "~1.0",
     "px/framework": "dev-master",
-    "roave/security-advisories": "dev-latest",
-    "ext-pdo": "*"
+    "roave/security-advisories": "dev-latest"
   },
   "require-dev": {
     "facade/ignition": "^2.5",
@@ -67,7 +68,7 @@
   },
   "config": {
     "github-oauth": {
-      "github.com": "4bc47e6aa8e801d60b1a39dce43e7fe35b4640d6"
+
     },
     "optimize-autoloader": true,
     "preferred-install": "dist",

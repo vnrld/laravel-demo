@@ -9,8 +9,12 @@ use App\Contracts\UserRepositoryContract;
 use App\Repositories\CacheRepository;
 use App\Repositories\UserHistoryRepository;
 use App\Repositories\UserRepository;
+use App\Services\CognitoService;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Log\LogManager;
 use Illuminate\Support\ServiceProvider;
+use Psr\Log\LoggerInterface;
+use Px\Framework\AWS\Cognito\Cognito;
 use Px\Framework\Cache\Cache;
 use Px\Framework\Http\Responder\Messaging\Messages;
 
@@ -49,6 +53,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(Messages::class, static function() {
             return new Messages();
+        });
+
+        $this->app->singleton(CognitoService::class, static function(Application $app) {
+            return new CognitoService(config('auth.cognito'), $app->make(LogManager::class));
         });
 
     }

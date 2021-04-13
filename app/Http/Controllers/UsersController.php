@@ -1,12 +1,11 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-
 use App\Contracts\UserRepositoryContract;
 use App\Exceptions\User\NotFoundException;
+use App\Filesystem\Storage;
 use App\Http\Messaging\MessageCodes;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\DeleteUserRequest;
@@ -124,5 +123,27 @@ class UsersController extends Controller
         $response->setSuccess($isDeleted);
         $response->setContent(['deleted' => $isDeleted]);
 
+        return $response->json();
+    }
+
+    public function savePhoto(): JsonResponse
+    {
+        $storage = new Storage();
+        $storage->put('test.txt', 'Photo: ' . date('Y-m-d H:i:s'));
+
+        $response = new Response();
+        $response->setContent([$storage->get('test.txt')]);
+        return $response->json();
+    }
+
+    public function savePhotoInS3(): JsonResponse
+    {
+        $storage = new Storage('s3');
+
+        \Illuminate\Support\Facades\Storage::disk('s3')->put('test.txt', 'Photo: ' . date('Y-m-d H:i:s'));
+
+        $response = new Response();
+        $response->setContent([\Illuminate\Support\Facades\Storage::disk('s3')->get('test.txt')]);
+        return $response->json();
     }
 }

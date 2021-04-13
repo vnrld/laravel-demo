@@ -46,6 +46,10 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+        'demo' => [
+            'driver' => 'demo',
+            'provider' => 'demo'
+        ]
     ],
 
     /*
@@ -70,6 +74,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        'demo' => [
+            'driver' => 'demo',
+            'model' => App\Models\CognitoUser::class
+        ]
 
         // 'users' => [
         //     'driver' => 'database',

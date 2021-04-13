@@ -19,7 +19,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::put('/users/save/photo/s3', [UsersController::class, 'savePhotoInS3']);
+Route::put('/users/save/photo', [UsersController::class, 'savePhoto']);
+
 Route::post('/users', [UsersController::class, 'createUser']);
 Route::get('/users/{id}', [UsersController::class, 'readUser']);
 Route::put('/users', [UsersController::class, 'updateUser']);
 Route::delete('/users/{id}', [UsersController::class, 'deleteUser']);
+
+

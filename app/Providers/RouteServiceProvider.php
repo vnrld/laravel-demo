@@ -38,6 +38,12 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
+
+            Route::prefix('cognito')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/cognito.php'));
+
             Route::prefix('v1')
                 ->middleware('api')
                 ->namespace($this->namespace)

@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\Renderer\Authentication\NotAuthenticatedRenderer;
 use App\Exceptions\Renderer\Validation\ValidationRenderer;
+use App\Exceptions\User\NotAuthenticatedException;
 use App\Exceptions\Validation\AppValidationException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -61,6 +63,10 @@ class Handler extends ExceptionHandler
             case $e instanceof AppValidationException:
                 $renderer = new ValidationRenderer($request, $e);
                 return $renderer->render();
+            case NotAuthenticatedException::class:
+                $renderer = new NotAuthenticatedRenderer($e);
+                return $renderer->render();
+                break;
             default:
                 return parent::render($request, $e);
         }
