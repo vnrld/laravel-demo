@@ -32,11 +32,6 @@ class UserObserver
     private UserHistoryRepositoryContract $userHistoryRepository;
 
     /**
-     * @var DateTime
-     */
-    private DateTime $dateTime;
-
-    /**
      * @var ConnectionInterface
      */
     private ConnectionInterface $db;
@@ -61,24 +56,8 @@ class UserObserver
     ) {
         $this->logger = $logger;
         $this->userHistoryRepository = $userHistoryRepository;
-        $this->dateTime = new DateTime();
         $this->db = $db;
         $this->cacheRepository = $cacheRepository;
-    }
-
-    /**
-     * @param Model $model
-     */
-    public function creating(Model $model): void
-    {
-        $uuid = Uuid::uuid4()->toString();
-
-        $this->logger->info('Creating new user\'s model with id: ' . $uuid, [__METHOD__, $uuid]);
-
-        $model->id = $uuid;
-
-        // Example
-        $model->email_verified_at = $this->dateTime->getTimestamp();
     }
 
     /**

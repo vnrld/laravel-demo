@@ -32,6 +32,7 @@ class NotAuthenticatedRenderer implements ExceptionRendererContract
         switch ($this->authenticatedException->getCode()) {
             case NotAuthenticatedException::API:
                 $response = new Response();
+                $response->setSuccess(false);
                 $response->setCode(Response::HTTP_FORBIDDEN);
                 $response->setMessage(0, [], $message);
                 return $response->json();

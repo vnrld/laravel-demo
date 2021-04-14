@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\User\NotAuthenticatedException;
 use App\Http\Requests\File\FileRequest;
 use Illuminate\Http\File;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,12 @@ class FileController extends Controller
 {
     public function createFile(FileRequest $fileRequest): JsonResponse
     {
+        $response = new Response();
+
+        if (!$fileRequest->validated()) {
+            throw new NotAuthenticatedException('Canbno');
+        }
+
         $disk = $fileRequest->getDisk();
         $file = $fileRequest->getFilename();
 

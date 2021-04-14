@@ -8,6 +8,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
+use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
@@ -30,6 +31,7 @@ class EmailVerificationTest extends TestCase
         Event::fake();
 
         $user = User::factory()->create([
+            'id' => Uuid::uuid4()->toString(),
             'email_verified_at' => null,
         ]);
 
@@ -49,6 +51,7 @@ class EmailVerificationTest extends TestCase
     public function test_email_is_not_verified_with_invalid_hash()
     {
         $user = User::factory()->create([
+            'id' => Uuid::uuid4()->toString(),
             'email_verified_at' => null,
         ]);
 

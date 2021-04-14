@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Exceptions\Validation\WebValidationException;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Validation\Factory as ValidatorContract;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
@@ -14,28 +16,17 @@ class BaseFormRequest extends FormRequest
 
     protected string $exceptionClass = WebValidationException::class;
 
-    public function __construct(
-        array $query = [],
-        array $request = [],
-        array $attributes = [],
-        array $cookies = [],
-        array $files = [],
-        array $server = [],
-        $content = null,
-        ValidatorContract $validationFactory
-    ) {
-        parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
-
-        $this->validationFactory = $validationFactory;
-    }
-
     public function prepareForValidation()
     {
-        $this->validator = $this->validationFactory->make($this->all(), $this->rules(), $this->messages());
-
-        if ($this->validator->fails()) {
+        if ($this->getValidatorInstance()->fails()) {
             $this->throwValidationException();
         }
+    }
+
+    public function getValidatorInstance(): Validator
+    {
+        $this->validationFactory = Container::getInstance()->make(ValidatorContract::class);
+        return $this->validationFactory->make($this->all(), $this->rules(), $this->messages());
     }
 
     public function rules(): array
@@ -45,7 +36,13 @@ class BaseFormRequest extends FormRequest
 
     protected function throwValidationException(): void
     {
-        throw new $this->exceptionClass($this->validator);
+        throw new $this->exceptionClass($this->getValidatorInstance());
+    }
+
+    public function validated()
+    {
+        $this->prepareForValidation();
+        return true;
     }
 
     public function __call($method, $parameters) {
