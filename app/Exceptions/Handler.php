@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
     {
         switch (get_class($e)) {
             case $e instanceof AppValidationException:
-                $renderer = new ValidationRenderer($request, $e);
+                $renderer = new ValidationRenderer($e);
                 return $renderer->render();
             case NotAuthenticatedException::class:
                 $renderer = new NotAuthenticatedRenderer($e);

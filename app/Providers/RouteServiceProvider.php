@@ -44,6 +44,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/cognito.php'));
 
+            Route::prefix('fs')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/fs.php'));
+
             Route::prefix('v1')
                 ->middleware('api')
                 ->namespace($this->namespace)
