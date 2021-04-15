@@ -31,8 +31,8 @@ class FileControllerTest extends TestCase
     {
         Event::fake();
 
-        $this->expectException(AppValidationException::class);
-        $this->expectExceptionMessageMatches('/.*"disk":\["The disk has to be one of.*/');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Disk [not-exists] does not have a configured driver.');
 
         $dataSource = $this->dataProvider();
         $dataSource['disk'] = 'not-exists';

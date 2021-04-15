@@ -34,15 +34,19 @@ class BaseFormRequest extends FormRequest
         return [];
     }
 
+    public function getExceptionClass(): string
+    {
+        return $this->exceptionClass;
+    }
+
     protected function throwValidationException(): void
     {
         throw new $this->exceptionClass($this->getValidatorInstance());
     }
 
-    public function validated()
+    public function validated(): array
     {
-        $this->prepareForValidation();
-        return true;
+        return $this->getValidatorInstance()->validated();
     }
 
     public function __call($method, $parameters) {

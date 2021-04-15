@@ -67,7 +67,7 @@ class UserObserver
     {
         $this->db->beginTransaction();
 
-        $uuid = $model->id;
+        $uuid = $model->getAttribute('id');
 
         try {
             $message = 'Created new user with id: ' . $uuid;
@@ -89,7 +89,7 @@ class UserObserver
     {
         $this->db->beginTransaction();
 
-        $uuid = $model->id;
+        $uuid = $model->getAttribute('id');
 
         try {
             $message = 'Updated user with id: ' . $uuid;
@@ -111,7 +111,7 @@ class UserObserver
     {
         $this->db->beginTransaction();
 
-        $uuid = $model->id;
+        $uuid = $model->getAttribute('id');
 
         try {
             $message = 'Deleted user with id: ' . $uuid;

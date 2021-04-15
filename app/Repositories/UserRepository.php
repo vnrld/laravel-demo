@@ -57,7 +57,7 @@ class UserRepository implements UserRepositoryContract
      */
     public function update(Model $model): Model
     {
-        $userId = $model->id;
+        $userId = $model->getAttribute('id');
 
         $user = User::find($userId);
 

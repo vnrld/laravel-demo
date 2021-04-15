@@ -18,7 +18,7 @@ class User extends Authenticatable
 
         //while creating/inserting item into db
         static::creating(function (Authenticatable $model) {
-            $model->id = Uuid::uuid4()->toString();
+            $model->setAttribute('id', Uuid::uuid4()->toString());
         });
     }
 
